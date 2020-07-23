@@ -31,11 +31,7 @@ Demo uses hosted AWS AppConfig & SSM instances and a local Redis instance.
 
 Names of feature flags can be changed in the MyFeatureFlags class to match your own if needed.
 Redis Provider uses a pattern to fetch FF. That can be changed in the RedisFeatureFlagsProvider class, SearchPattern variable.
-Redis provider is only set up to fetch primitive flags in the format of <key, value>
-AppConfig can store more complex, parameterized flag format required for conditional flags and filtering. <key, object>
-
-The format used can be seen in appsettings.json "FeatureManagement" section under "AppSettingsFeature".
-The usage is demonstrated in the FeatureFlagFilters.Filter class, TestFilter example.
+Redis & AppConfig providers are only set up to fetch primitive flags in the format of <key, value>
 
 For SSM in this demo, flags are assumed to be stored as such:
 "us-west-2" (or any valid aws region) - flag is enabled
@@ -43,6 +39,5 @@ For SSM in this demo, flags are assumed to be stored as such:
 "localhost" - only enabled for debug purposes.
 
 SSM flags are mapped to JObjects demonstrated in appsettings and parsed by path to Dictionary<string,string>.
-
 
 By default SSM, Redis & AppConfig providers are comented out in the FeatureManagementConfigurationExtensions class.

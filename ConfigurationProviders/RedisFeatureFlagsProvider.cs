@@ -12,7 +12,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
     {
         private const string ConnectionString = "localhost";
         private const string SearchPattern = "RedisFeature*";
-        private const int ReloadPeriodMs = 10000;
+        private const ushort ReloadPeriodMs = 10000;
         private static ConnectionMultiplexer _redisClient;
 
         public RedisFeatureFlagsProvider()
@@ -28,6 +28,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
         public override void Load()
         {
             var allFeatureFlags = GetAllKeyValuePairs(_redisClient, ConnectionString, SearchPattern);
+
             if (!Data.ContentEquals(allFeatureFlags))
             {
                 Data = allFeatureFlags;

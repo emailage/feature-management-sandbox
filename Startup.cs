@@ -1,4 +1,3 @@
-using FeatureManagementSandbox.FeatureFlagFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -16,14 +15,13 @@ namespace FeatureManagementSandbox
         }
 
         private IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddFeatureManagement()
-                .AddFeatureFilter<Filter.TestFilter>();
+            services.AddFeatureManagement();
         }
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -39,7 +37,6 @@ namespace FeatureManagementSandbox
             {
                 endpoints.MapControllers();
             });
-
         }
     }
 }
