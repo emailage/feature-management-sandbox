@@ -19,11 +19,11 @@ namespace FeatureManagementSandbox.ConfigurationProviders
         {
             InitializeRedis(ConnectionString);
             ChangeToken.OnChange(() =>
-                {
-                    var cancellationTokenSource = new CancellationTokenSource(ReloadPeriodMs);
-                    var cancellationChangeToken = new CancellationChangeToken(cancellationTokenSource.Token);
-                    return cancellationChangeToken;
-                }, Load);
+            {
+                var cancellationTokenSource = new CancellationTokenSource(ReloadPeriodMs);
+                var cancellationChangeToken = new CancellationChangeToken(cancellationTokenSource.Token);
+                return cancellationChangeToken;
+            }, Load);
         }
         public override void Load()
         {
@@ -41,11 +41,11 @@ namespace FeatureManagementSandbox.ConfigurationProviders
             _redisClient = ConnectionMultiplexer.Connect(server);
         }
 
-        private static Dictionary<string,string> GetAllKeyValuePairs(IConnectionMultiplexer host, string hostAddress, string pattern = null)
+        private static Dictionary<string, string> GetAllKeyValuePairs(IConnectionMultiplexer host, string hostAddress, string pattern = null)
         {
             if (string.IsNullOrEmpty(hostAddress)) throw new ArgumentNullException(nameof(hostAddress));
             var db = host.GetDatabase();
-            var keys = host.GetServer(hostAddress, 6379).Keys(pattern:pattern);
+            var keys = host.GetServer(hostAddress, 6379).Keys(pattern: pattern);
             var keysArr = keys.Select(key => (string)key).ToArray();
             var keyValueMap = keysArr.ToDictionary(key => key, key => db.StringGet(key).ToString());
             return keyValueMap;

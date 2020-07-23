@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
+using System.Threading.Tasks;
 
 namespace FeatureManagementSandbox.Controllers
 {
@@ -23,13 +23,22 @@ namespace FeatureManagementSandbox.Controllers
         public async Task<string> Get()
         {
             var redisFeatureA = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.RedisFeatureA));
-            var redisFeatureB = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.RedisFeatureB)); 
+            var redisFeatureB = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.RedisFeatureB));
             var dummyFeatureA = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.DummyFeatureA));
             var appConfigFeatureA = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.AppConfigFeatureA));
             var appConfigFeatureB = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.AppConfigFeatureB));
+            var appConfigFeatureC = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.AppConfigFeatureC));
+            var ssmFeatureA = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.SsmFeatureA));
+            var ssmFeatureB = _featureManagerSnapshot.IsEnabledAsync(nameof(MyFeatureFlags.SsmFeatureB));
 
-            
-            return $"RedisFeatureA: {await redisFeatureA}. RedisFeatureB: {await redisFeatureB}, DummyFeatureA: {await dummyFeatureA}, AppConfigFeatureA: {await appConfigFeatureA}, AppConfigFeatureB: {await appConfigFeatureB}";
+            return $"RedisFeatureA: {await redisFeatureA},\n " +
+                   $"RedisFeatureB: {await redisFeatureB},\n " +
+                   $"DummyFeatureA: {await dummyFeatureA},\n " +
+                   $"AppConfigFeatureA: {await appConfigFeatureA},\n " +
+                   $"AppConfigFeatureB: {await appConfigFeatureB},\n " +
+                   $"AppConfigFeatureC: {await appConfigFeatureC},\n " +
+                   $"SsmFeatureA: {await ssmFeatureA} \n" +
+                   $"SsmFeatureB: {await ssmFeatureB}";
         }
     }
 }

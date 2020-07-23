@@ -82,7 +82,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
 
             };
 
-            var configValues =  await _appConfigClient.GetConfigurationAsync(request);
+            var configValues = await _appConfigClient.GetConfigurationAsync(request);
             if (_awsConfigurationVersion == configValues.ConfigurationVersion)
                 return null;
 
@@ -90,12 +90,12 @@ namespace FeatureManagementSandbox.ConfigurationProviders
             return DeserializeFromStream(configValues.Content);
         }
 
-        public static Dictionary<string,string> DeserializeFromStream(MemoryStream stream)
+        public static Dictionary<string, string> DeserializeFromStream(MemoryStream stream)
         {
             var serializer = new JsonSerializer();
             using var sr = new StreamReader(stream);
             using var jsonTextReader = new JsonTextReader(sr);
-            var valuesObject =  serializer.Deserialize<Dictionary<string,string>>(jsonTextReader);
+            var valuesObject = serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
             stream.Dispose();
             return valuesObject;
         }

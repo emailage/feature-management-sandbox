@@ -1,9 +1,8 @@
+using FeatureManagementSandbox.ConfigurationSources;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FeatureManagementSandbox.ConfigurationSources;
-using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
 
 namespace FeatureManagementSandbox
 {
@@ -12,16 +11,10 @@ namespace FeatureManagementSandbox
         public static IConfigurationBuilder AddFeatureFlagsConfiguration(this IConfigurationBuilder configuration)
         {
             configuration.Add(new DummyConfigurationSource());
-            //configuration.Add(new RedisConfigurationSource());
             //configuration.Add(new AppConfigConfigurationSource());
+            //configuration.Add(new RedisConfigurationSource());
+            //configuration.Add(new SsmConfigurationSource());
             return configuration;
-        }
-
-        public static string[] ToStringArray(this RedisValue[] values)
-        {
-            if (values == null) return null;
-            if (values.Length == 0) return new string[0];
-            return Array.ConvertAll(values, x => (string)x);
         }
 
         public static bool ContentEquals<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Dictionary<TKey, TValue> otherDictionary)
