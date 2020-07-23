@@ -1,15 +1,13 @@
 ﻿using Amazon;
 using Amazon.AppConfig;
 using Amazon.AppConfig.Model;
+using FeatureManagementSandbox.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace FeatureManagementSandbox.ConfigurationProviders
 {
@@ -19,7 +17,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
         private static string _clientId;
         private const string ClientId = "ClientID";
         private static readonly RegionEndpoint Region = RegionEndpoint.USWest2;
-        private const ushort ReloadPeriodMs = 10000;
+        private const int ReloadPeriodMs = 10000;
         private const string Environment = "dev";
         private const string ApplicationName = "appconfig-app-name";
         private const string ConfigurationName = "test";
@@ -40,15 +38,15 @@ namespace FeatureManagementSandbox.ConfigurationProviders
 
         public async Task LoadAsync()
         {
-            var allFeatureFlags = await GetAllKeyValuePairs(ApplicationName, _awsConfigurationVersion, _clientId, ConfigurationName, Environment);
-            if (allFeatureFlags != null)
+            var newData = await GetConfigurationValues(ApplicationName, _awsConfigurationVersion, _clientId, ConfigurationName, Environment);
+            if (newData != null)
             {
-                if (!Data.ContentEquals(allFeatureFlags))
+                if (!Data.ContentEquals(newData))
                 {
-                    Data = allFeatureFlags;
+                    Data = newData;
                     OnReload();
                 }
-            };
+            }
         }
 
         [Obsolete("Synchronous Load() is not used. Use LoadAsync() instead.")]
@@ -59,7 +57,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
               We propose asynchronous execution and health checking in order to determine if the application is ready to serve traffic.
             */
         }
-
+        
         public static void InitializeAppConfig(RegionEndpoint region)
         {
             if (region == null) throw new ArgumentNullException(nameof(region));
@@ -70,7 +68,7 @@ namespace FeatureManagementSandbox.ConfigurationProviders
             });
         }
 
-        private static async Task<Dictionary<string, string>> GetAllKeyValuePairs(string appName, string configVersion, string clientId, string configName, string env)
+        private async Task<Dictionary<string,string>> GetConfigurationValues(string appName, string configVersion, string clientId, string configName, string env)
         {
             var request = new GetConfigurationRequest
             {
@@ -82,22 +80,15 @@ namespace FeatureManagementSandbox.ConfigurationProviders
 
             };
 
-            var configValues =  await _appConfigClient.GetConfigurationAsync(request);
-            if (_awsConfigurationVersion == configValues.ConfigurationVersion)
+            var configValues = await _appConfigClient.GetConfigurationAsync(request);
+            if (_awsConfigurationVersion == configValues.ConfigurationVersion || configValues.Content == null ||
+                configValues.Content.Length == 0)
                 return null;
-
+            
             _awsConfigurationVersion = configValues.ConfigurationVersion;
-            return DeserializeFromStream(configValues.Content);
-        }
-
-        public static Dictionary<string,string> DeserializeFromStream(MemoryStream stream)
-        {
-            var serializer = new JsonSerializer();
-            using var sr = new StreamReader(stream);
-            using var jsonTextReader = new JsonTextReader(sr);
-            var valuesObject =  serializer.Deserialize<Dictionary<string,string>>(jsonTextReader);
-            stream.Dispose();
-            return valuesObject;
+            var parsedValues =  new Dictionary<string, string>(JsonConfigurationFileParser.Parse(configValues.Content));
+            configValues.Content.Dispose();
+            return parsedValues;
         }
     }
 }
